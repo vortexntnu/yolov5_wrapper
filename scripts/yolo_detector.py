@@ -2,25 +2,23 @@ import cv2
 import torch
 
 
-
 class YOLOv5Detector:
-    def __init__(self, model_name='yolov5s'):
+    def __init__(self, model_name="yolov5s"):
         # load model using Torch
         self.model = torch.hub.load("ultralytics/yolov5", model_name)
-        self.conf_thres=0.5
-
+        self.conf_thres = 0.5
 
         # # from a local directory
         # path = '/some/local/path/pytorch/vision'
         # # xdoctest: +SKIP
         # model = torch.hub.load(path, 'resnet50', weights='ResNet50_Weights.DEFAULT')
-        
+
     def perform_inference(self, img):
 
-        #results = self.model(img, conf_thres=self.conf_thres)
+        # results = self.model(img, conf_thres=self.conf_thres)
         results = self.model(img)
         return results
-    
+
     def show_detections(self, img, results):
 
         # draw bounding box onto image
@@ -30,14 +28,27 @@ class YOLOv5Detector:
             bbox = det[:4]
 
             # draw rectangle on image
-            img = cv2.rectangle(img, (bbox[0].item(), bbox[1].item()), (bbox[2].item(), bbox[3].item()), (0, 0, 255), 2)
+            img = cv2.rectangle(
+                img,
+                (bbox[0].item(), bbox[1].item()),
+                (bbox[2].item(), bbox[3].item()),
+                (0, 0, 255),
+                2,
+            )
             # put label and score on image
-            cv2.putText(img, f"{label} {score:.2f}", (bbox[0], bbox[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1)
+            cv2.putText(
+                img,
+                f"{label} {score:.2f}",
+                (bbox[0], bbox[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.5,
+                (0, 0, 255),
+                1,
+            )
 
         cv2.imshow("Detections", img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-
 
 
 # # load image using OpenCV
