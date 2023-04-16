@@ -1,0 +1,16 @@
+ros:
+  sub_topic: '/zed/rgb/image_rect_color'
+  pub_topic: 'yolo/bbox'
+  frame_id: 'zed2_left_camera_sensor'
+
+
+model:
+  name: 'custom'
+  path: '/home/vortex/perception_ws/src/yolov5_wrapper/my_model.pt'
+
+  conf: 0.25  # NMS confidence threshold
+  iou: 0.45  # NMS IoU threshold
+  agnostic: False  # NMS class-agnostic
+  multi_label: False  # NMS multiple labels per box
+  max_det: 1000  # maximum number of detections per image
+  amp: False  # Automatic Mixed Precision (AMP) inference

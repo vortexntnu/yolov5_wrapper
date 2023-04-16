@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import rospy
+import rospkg
+import yaml
 
 from sensor_msgs.msg import Image
 from cv_msgs.msg import BBox, BBoxes
@@ -15,19 +17,34 @@ import yolo_detector
 
 class YoloWrapperNode:
     def __init__(self):
-        self.detector = yolo_detector.YOLOv5Detector()
 
+        #load config file 
+        r = rospkg.RosPack()
+        path = r.get_path("yolov5_wrapper")
+        rospy.loginfo(path)
+        with open(
+                path + "/config/config_yolov5_wrapper.yaml",
+                "r",
+        ) as stream:
+            config = yaml.safe_load(stream)
+
+        #create yolo detector instace
+        self.detector = yolo_detector.YOLOv5Detector(config)
+
+        print(config['ros']['sub_topic'])
+
+
+        #init ros node
         rospy.init_node("yolov5_wrapper_node")
         self.image_sub = rospy.Subscriber(
-            "/zed/rgb/image_rect_color", Image, self.img_cb
+            config['ros']['sub_topic'], Image, self.img_cb
         )
-        self.bbox_pub = rospy.Publisher("yolo/bbox", BBoxes, queue_size=10)
+        self.bbox_pub = rospy.Publisher(config['ros']['pub_topic'], BBoxes, queue_size=10)
 
         self.seq = 0
-        self.frame_id = "zed2_left_camera_sensor"
+        self.frame_id = config['ros']['frame_id']
         self.bridge = CvBridge()
 
-        self.approval_treashold = 0.5
 
     def img_cb(self, msg):
         img = self.unpack_img_msg(msg)
@@ -35,10 +52,10 @@ class YoloWrapperNode:
         print(results)
 
         if len(results.xyxy[0]) > 0:
-            self.publish_approved_results(results)
+            self.publish_results(results)
 
-    def publish_approved_results(self, results):
-        bboxes = self.pack_approved_BBoxes_msg(results)
+    def publish_results(self, results):
+        bboxes = self.pack_BBoxes_msg(results)
         self.bbox_pub.publish(bboxes)
 
     def unpack_img_msg(self, msg):
@@ -50,7 +67,7 @@ class YoloWrapperNode:
 
         return cv_image
 
-    def pack_approved_BBoxes_msg(self, results):
+    def pack_BBoxes_msg(self, results):
         bbox_list_msg = BBoxes()
 
         bbox_list_msg.header.stamp = rospy.Time.now()
