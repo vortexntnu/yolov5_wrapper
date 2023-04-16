@@ -59,27 +59,24 @@ class YoloWrapperNode:
         self.seq += 1
 
         for det in results.xyxy[0]:
-            probability = det[4].item()
+            bbox_msg = BBox()
 
-            if probability >= self.approval_treashold:
-                bbox_msg = BBox()
+            bbox_msg.probability =det[4].item()
+            bbox = det[:4]
+            bbox = bbox.int()
+            x1, y1, x2, y2 = bbox
+            bbox_msg.xmin = x1.item()
+            bbox_msg.ymin = y1.item()
+            bbox_msg.xmax = x2.item()
+            bbox_msg.ymax = y2.item()
+            bbox_msg.z = 1000000.0  #  z value will be set in Point cloud processing
 
-                bbox_msg.probability = probability
-                bbox = det[:4]
-                bbox = bbox.int()
-                x1, y1, x2, y2 = bbox
-                bbox_msg.xmin = x1.item()
-                bbox_msg.ymin = y1.item()
-                bbox_msg.xmax = x2.item()
-                bbox_msg.ymax = y2.item()
-                bbox_msg.z = 1000000.0  #  z value will be set in Point cloud processing
+            bbox_msg.id = 0  #
+            bbox_msg.Class = str(
+                det[5].item()
+            )  # OBS: should be possible to find the actuall string corresponding to the number
 
-                bbox_msg.id = 0  #
-                bbox_msg.Class = str(
-                    det[5].item()
-                )  # OBS: should be possible to find the actuall string corresponding to the number
-
-                bbox_list_msg.bounding_boxes.append(bbox_msg)
+            bbox_list_msg.bounding_boxes.append(bbox_msg)
 
         return bbox_list_msg
 

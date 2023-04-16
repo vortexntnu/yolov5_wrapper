@@ -7,7 +7,7 @@ class YOLOv5Detector:
 
         # default model
         self.model = torch.hub.load("ultralytics/yolov5", model_name)
-        self.conf_thres = 0.5
+        self.model.conf = 0.5
 
     def perform_inference(self, img):
         results = self.model(img)
