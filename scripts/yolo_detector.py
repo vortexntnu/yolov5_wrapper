@@ -13,7 +13,6 @@ class YOLOv5Detector:
         results = self.model(img)
         return results
 
-
     def show_detections(self, img, results):
         for det in results.xyxy[0]:
             label = det[5]
@@ -41,4 +40,3 @@ class YOLOv5Detector:
         cv2.imshow("Detections", img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-

@@ -9,7 +9,6 @@ from cv_bridge import CvBridge
 IMAGE_PATH = "/home/vortex/perception_ws/src/yolov5_wrapper/data/images.jpeg"
 
 
-
 def main():
     # Initialize the ROS node
     rospy.init_node("image_publisher")
