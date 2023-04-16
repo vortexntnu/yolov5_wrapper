@@ -6,8 +6,13 @@ class YOLOv5Detector:
     def __init__(self, model_name="yolov5s"):
 
         # default model
-        self.model = torch.hub.load("ultralytics/yolov5", model_name)
+        #self.model = torch.hub.load("ultralytics/yolov5", model_name)
+
+        # custom model 
+        self.model = torch.hub.load('ultralytics/yolov5', 'custom', path='/home/vortex/perception_ws/src/yolov5_wrapper/my_model.pt')  # local model
+
         self.model.conf = 0.5
+        self.model.cuda()
 
     def perform_inference(self, img):
         results = self.model(img)
