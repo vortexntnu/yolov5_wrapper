@@ -4,6 +4,7 @@ import torch
 
 class YOLOv5Detector:
     def __init__(self, model_name="yolov5s"):
+
         # default model
         self.model = torch.hub.load("ultralytics/yolov5", model_name)
         self.conf_thres = 0.5
@@ -11,6 +12,7 @@ class YOLOv5Detector:
     def perform_inference(self, img):
         results = self.model(img)
         return results
+
 
     def show_detections(self, img, results):
         for det in results.xyxy[0]:
@@ -25,6 +27,7 @@ class YOLOv5Detector:
                 (0, 0, 255),
                 2,
             )
+
             cv2.putText(
                 img,
                 f"{label} {score:.2f}",
@@ -38,3 +41,4 @@ class YOLOv5Detector:
         cv2.imshow("Detections", img)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
+
