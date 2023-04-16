@@ -1,29 +1,11 @@
 #!/usr/bin/python3
 
 import rospy
-import rospkg
-import numpy as np
-from tf.transformations import quaternion_from_euler
 
-# from geometry_msgs.msg import (
-#     PoseArray,
-#     PoseWithCovariance,
-#     Pose,
-#     Point,
-#     Quaternion,
-#     TwistWithCovariance,
-#     Twist,
-#     Vector3,
-# )
-# from nav_msgs.msg import Odometry
-# from std_msgs.msg import Header
-
-from std_msgs.msg import Header
 from sensor_msgs.msg import Image
 from cv_msgs.msg import BBox, BBoxes
 from cv_bridge import CvBridge
-import yolo_detector 
-
+import yolo_detector
 
 
 """
@@ -32,14 +14,13 @@ import yolo_detector
 
 
 class YoloWrapperNode:
-
-
     def __init__(self):
-
         self.detector = yolo_detector.YOLOv5Detector()
 
         rospy.init_node("yolov5_wrapper_node")
-        self.image_sub = rospy.Subscriber("/zed/rgb/image_rect_color", Image, self.img_cb)
+        self.image_sub = rospy.Subscriber(
+            "/zed/rgb/image_rect_color", Image, self.img_cb
+        )
         self.bbox_pub = rospy.Publisher("yolo/bbox", BBoxes, queue_size=10)
 
         self.seq = 0
@@ -48,16 +29,13 @@ class YoloWrapperNode:
 
         self.approval_treashold = 0.5
 
-
     def img_cb(self, msg):
-
         img = self.unpack_img_msg(msg)
         results = self.detector.perform_inference(img)
         print(results)
 
         if len(results.xyxy[0]) > 0:
             self.publish_approved_results(results)
-
 
     def publish_approved_results(self, results):
         bboxes = self.pack_approved_BBoxes_msg(results)
@@ -69,24 +47,21 @@ class YoloWrapperNode:
         except Exception as e:
             print(e)
             return
-        
+
         return cv_image
 
     def pack_approved_BBoxes_msg(self, results):
-
         bbox_list_msg = BBoxes()
-        
+
         bbox_list_msg.header.stamp = rospy.Time.now()
         bbox_list_msg.header.frame_id = self.frame_id
         bbox_list_msg.header.seq = self.seq
         self.seq += 1
 
         for det in results.xyxy[0]:
-
             probability = det[4].item()
 
             if probability >= self.approval_treashold:
-
                 bbox_msg = BBox()
 
                 bbox_msg.probability = probability
@@ -99,8 +74,10 @@ class YoloWrapperNode:
                 bbox_msg.ymax = y2.item()
                 bbox_msg.z = 1000000.0  #  z value will be set in Point cloud processing
 
-                bbox_msg.id = 0  # 
-                bbox_msg.Class = str(det[5].item()) #OBS: should be possible to find the actuall string corresponding to the number
+                bbox_msg.id = 0  #
+                bbox_msg.Class = str(
+                    det[5].item()
+                )  # OBS: should be possible to find the actuall string corresponding to the number
 
                 bbox_list_msg.bounding_boxes.append(bbox_msg)
 
