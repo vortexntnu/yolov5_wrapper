@@ -1,21 +1,24 @@
 import cv2
 import torch
+#from ...yolov5.models.experimental import attempt_load
 
 
 class YOLOv5Detector:
+
     def __init__(self, config):
 
         # default model
         #self.model = torch.hub.load("ultralytics/yolov5", model_name)
 
         # custom model 
-        self.model = torch.hub.load('ultralytics/yolov5', config['model']['name'], path=config['model']['path'])  # local model
+        self.model = torch.hub.load('ultralytics/yolov5', config['model']['name'], path=config['model']['path'], force_reload=True)  # local model
+
 
         self.model.conf = config['model']['conf']
         self.model.iou = config['model']['iou']
         self.model.agnostic = config['model']['agnostic']
         self.model.multi_label = config['model']['multi_label']
-        # self.model.classes = config['model']['classes']
+        #self.model.classes = config['model']['classes']
         self.model.max_det = config['model']['max_det']
         self.model.amp = config['model']['amp']
 
@@ -27,6 +30,7 @@ class YOLOv5Detector:
 
 
     def show_detections(self, img, results):
+
         for det in results.xyxy[0]:
             label = det[5]
             score = det[4]
