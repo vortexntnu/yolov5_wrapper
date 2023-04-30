@@ -6,7 +6,7 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 # Set the image path
-IMAGE_PATH = "/home/vortex/perception_ws/src/yolov5_wrapper/data/test.jpg"
+IMAGE_PATH = "/home/vortex/perception_ws/src/yolov5_wrapper/data/images.jpeg"
 
 
 

@@ -6,7 +6,7 @@ ros:
 
 model:
   name: 'custom'
-  path: '/home/vortex/perception_ws/src/yolov5/runs/train/exp9/weights/best.pt'
+  path: '/home/vortex/perception_ws/src/yolov5/runs/train/exp/weights/best.pt'  #'/home/vortex/perception_ws/src/yolov5/runs/train/exp9/weights/best.pt'
 
   conf: 0.5  # NMS confidence threshold
   iou: 0.45  # NMS IoU threshold
